@@ -11,16 +11,16 @@ class TaskController extends Controller
 {
     public function createtask(Request $request)
     {
-
         $request->validate([
             'title' => 'required|string|max:255',
             'description' => 'nullable|string',
-            'date' => 'nullable|date',
+            'date' => 'nullable',
             'starttime' => 'nullable|string',
             'endtime' => 'nullable|string',
             'is_high_priority' => 'nullable|boolean',
             'status' => 'nullable|in:completed,todo',
         ]);
+
         if (!Auth::check()) {
             return response()->json(['message' => 'Unauthenticated'], 401);
         }
@@ -43,17 +43,18 @@ class TaskController extends Controller
     }
     public function updateTask(Request $request, $taskid)
     {
-        // dd(Auth::id());
         // dd($request->title);
         $request->validate([
             'title' => 'string|max:255',
             'description' => 'nullable|string',
-            'date' => 'date',
+            'date' => 'nullable',
             'starttime' => 'string',
             'endtime' => 'string',
-            'is_high_priority' => 'boolean',
+            'is_high_priority' => 'nullable|boolean',
             'status' => 'in:todo,completed',
         ]);
+        // dd(Auth::id());
+
 
         $task = Task::where('id', $taskid)
                     ->where('user_id', auth()->id())

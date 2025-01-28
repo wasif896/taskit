@@ -18,10 +18,13 @@ return new class extends Migration
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
             $table->string('phone')->nullable();
-            $table->string('profile_pic')->nullable();
-            $table->string('login_with')->nullable();
-            $table->string('socialid')->nullable();
+            $table->string('profileImage')->nullable();
+            $table->string('loginWith')->nullable();
+            $table->string('socialId')->nullable();
             $table->string('notification')->nullable();
+            $table->string('verficiationCode')->nullable();
+
+
             $table->rememberToken();
             $table->timestamps();
         });

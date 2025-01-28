@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('title');
             $table->text('description')->nullable();
-            $table->timestamp('date')->nullable();
+            $table->integer('date')->nullable();
             $table->string('starttime')->nullable();
             $table->string('endtime')->nullable();
             $table->boolean('is_high_priority')->default(false);

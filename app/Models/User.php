@@ -21,7 +21,12 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
-        'password_confirmation'
+        'password_confirmation',
+        'profileImage',
+        'loginWith',
+        'socialId',
+        'notification',
+        'verficiationCode'
     ];
 
     /**

@@ -14,11 +14,19 @@ Route::get('/user', function (Request $request) {
 })->middleware('auth:api');
 
 
-Route::post('login', [UserController::class,'login']);
+Route::post('login', [UserController::class,'login'])->name('login');
 Route::post('register',[UserController::class,'register'])->name('register_user');
 
 
+
 Route::middleware('auth:api')->group(function () {
+    Route::post('/updateUser', [UserController::class, 'updateUser']);
+    Route::get('/getUser',[UserController::class,'getUser']);
+    Route::post('/forgotPassword', [UserController::class, 'forgotPassword']);
+    Route::post('/changePassword', [UserController::class,'changePassword']);
+    Route::post('/deleteAccount', [UserController::class, 'deleteAccount']);
+    Route::post('/logout', [UserController::class, 'logout']);
+
     Route::post('/createtask', [TaskController::class, 'createTask']);
     Route::post('/updateTask/{taskid}', [TaskController::class, 'updateTask']);
     Route::get('/getTaskById/{taskid}', [TaskController::class, 'getTaskById']);
