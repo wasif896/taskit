@@ -22,6 +22,9 @@ class UserController extends Controller
             'email' => 'required|email|unique:users,email',
             'password' => 'required|string|min:6|max:12',
             'password_confirmation' => 'required|same:password',
+            'loginWith' => 'required|in:google,apple,email',
+            'fcmToken' => 'required',
+            'platForm' => 'required',
         ]);
 
         // Check if validation fails
@@ -41,6 +44,10 @@ class UserController extends Controller
             'name' => $data['name'],
             'email' => $data['email'],
             'password' => $data['password'],
+            'loginWith' => $data['loginWith'],
+            'fcmToken' => $data['fcmToken'],
+            'platForm' => $data['platForm'],
+
         ]);
 
         $token = $user->createToken('authToken')->accessToken;
@@ -63,6 +70,7 @@ class UserController extends Controller
             'email' => $request->loginWith != 'email' ? 'nullable|email' : 'required|email',
             'socialId' => $request->loginWith != 'email' ? 'required|string' : 'nullable',
             'password' => $request->loginWith == 'email' ? 'required|string|min:6|max:12' : 'nullable',
+
         ]);
 
         if ($validator->fails()) {
@@ -165,7 +173,7 @@ class UserController extends Controller
         }, ARRAY_FILTER_USE_KEY);
 
         if (isset($data['profileImage'])) {
-            $filteredData['profileImage'] = $this->handleImageUpload($data['profileImage'], 'profile_Image');
+            $filteredData['profileImage'] = $this->handleImageUpload($data['profileImage'], 'profileImage');
         }
 
         $userId = Auth::user()->id;
@@ -255,6 +263,7 @@ public function forgotPassword(Request $request)
 
     return response()->json([
         'status' => true,
+        'otp' => $otpCode,
         'message' => 'OTP sent to your email address.',
     ], 200);
 }
@@ -282,6 +291,7 @@ public function deleteAccount()
         'message' => 'User not found',
     ], 404);
 }
+
 public function logout()
 {
     $user = Auth::user();
@@ -304,6 +314,48 @@ public function logout()
     ], 401);
 }
 
+public function resetPassword(Request $request)
+{
+    $validator = Validator::make($request->all(), [
+        'email' => 'required|email|exists:users,email',
+        'otp' => 'required|integer',
+        'password' => Hash::make($request->newPassword),
+    ]);
+
+    if ($validator->fails()) {
+        return response()->json([
+            'status' => false,
+            'message' => $validator->errors()->first(),
+        ], 400);
+    }
+
+    $user = User::where('email', $request->email)->first();
+
+    if ($user->verficiationCode != $request->otp) {
+        return response()->json([
+            'status' => false,
+            'message' => 'Invalid OTP.',
+        ], 400);
+    }
+
+    // if ($user->otp_expires_at < now()) {
+    //     return response()->json([
+    //         'status' => false,
+    //         'message' => 'OTP has expired.',
+    //     ], 400);
+    // }
+
+    $user->update([
+        'password' => Hash::make($request->password),
+        'verficiationCode' => null,
+        // 'otp_expires_at' => null,
+    ]);
+
+    return response()->json([
+        'status' => true,
+        'message' => 'Password reset successfully.',
+    ], 200);
+}
 
 
 }

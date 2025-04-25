@@ -14,47 +14,79 @@ class TaskController extends Controller
         $request->validate([
             'title' => 'required|string|max:255',
             'description' => 'nullable|string',
-            'date' => 'nullable',
-            'starttime' => 'nullable|string',
-            'endtime' => 'nullable|string',
-            'is_high_priority' => 'nullable|boolean',
+            'due_date' => 'nullable',
+            'start_time' => 'nullable|string',
+            'end_time' => 'nullable|string',
+            'priority' => 'nullable|in:high,low,medium',
             'status' => 'nullable|in:completed,todo',
+            'picture' => 'nullable|file|mimes:jpeg,png,jpg|max:2048',
+            'video' => 'nullable|file|mimes:mp4,mov,avi|max:51200',
+            'url' => 'nullable'
         ]);
 
         if (!Auth::check()) {
             return response()->json(['message' => 'Unauthenticated'], 401);
         }
 
+        $picturePath = null;
+        if ($request->hasFile('picture')) {
+            $picturePath = $this->handleImageUpload($request->file('picture'), 'pictures');
+        }
+
+
+        $videoPath = null;
+        if ($request->hasFile('video')) {
+            $videoPath = $this->handleImageUpload($request->file('video'), 'videos');
+        }
+
         $task = Task::create([
             'title' => $request->title,
             'description' => $request->description,
-            'date' => $request->date,
-            'starttime' => $request->starttime,
-            'endtime' => $request->endtime,
-            'is_high_priority' => $request->is_high_priority ?? false,
+            'due_date' => $request->due_date,
+            'start_time' => $request->start_time,
+            'end_time' => $request->end_time,
+            'priority'=> $request->priority ?? false,
             'status' => $request->status ?? 'todo',
-            'user_id' =>  Auth::id(),
+            'user_id' => Auth::id(),
+            'picture' => $picturePath,
+            'video' => $videoPath,
+            'url' => $request->url,
         ]);
+
+        $createDate = strtotime($task->created_at);
+
+        $task->create_date = strval($createDate);
 
         return response()->json([
             'message' => 'Task created successfully.',
             'task' => $task,
         ], 201);
     }
+
+
+    public function handleImageUpload($image, $type)
+    {
+        $filename = uniqid() . '.' . $image->getClientOriginalExtension();
+        $path = public_path('images/' . $type . '/' . $filename);
+        $image->move(public_path('images/' . $type), $filename);
+        return 'images/' . $type . '/' . $filename;
+    }
+
     public function updateTask(Request $request, $taskid)
     {
-        // dd($request->title);
+        // Validate incoming data
         $request->validate([
-            'title' => 'string|max:255',
+            'title' => 'nullable|string|max:255',
             'description' => 'nullable|string',
-            'date' => 'nullable',
-            'starttime' => 'string',
-            'endtime' => 'string',
-            'is_high_priority' => 'nullable|boolean',
-            'status' => 'in:todo,completed',
+            'due_date' => 'nullable|date',
+            'start_time' => 'nullable|string',
+            'end_time' => 'nullable|string',
+            'priority' => 'nullable|in:high,low,medium',
+            'status' => 'nullable|in:todo,completed',
+            'picture' => 'nullable|file|mimes:jpeg,png,jpg|max:2048',
+            'video' => 'nullable|file|mimes:mp4,mov,avi|max:51200',
+            'url' => 'nullable'
         ]);
-        // dd(Auth::id());
-
 
         $task = Task::where('id', $taskid)
                     ->where('user_id', auth()->id())
@@ -66,14 +98,25 @@ class TaskController extends Controller
             ], 404);
         }
 
+        if ($request->hasFile('picture')) {
+            $picturePath = $this->handleImageUpload($request->file('picture'), 'pictures');
+            $task->picture = $picturePath;
+        }
+
+        if ($request->hasFile('video')) {
+            $videoPath = $this->handleImageUpload($request->file('video'), 'videos');
+            $task->video = $videoPath;
+        }
+
         $task->update($request->only([
             'title',
             'description',
-            'date',
-            'starttime',
-            'endtime',
-            'is_high_priority',
+            'due_date',
+            'start_time',
+            'end_time',
+            'priority',
             'status',
+            'url',
         ]));
 
         return response()->json([
@@ -81,6 +124,7 @@ class TaskController extends Controller
             'task' => $task,
         ], 200);
     }
+
     public function getTaskById($taskid)
     {
         $task = Task::find($taskid);
@@ -95,6 +139,7 @@ class TaskController extends Controller
             'task' => $task,
         ], 200);
     }
+
     public function getAllTask(){
         $userid = Auth::id();
         $tasks = Task::where('user_id', $userid)->get();
@@ -110,6 +155,7 @@ class TaskController extends Controller
             'tasks' => $tasks,
         ], 200);
     }
+
     public function deleteTask($taskid)
     {
         $task = Task::where('id', $taskid)

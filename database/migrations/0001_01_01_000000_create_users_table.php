@@ -20,6 +20,8 @@ return new class extends Migration
             $table->string('phone')->nullable();
             $table->string('profileImage')->nullable();
             $table->string('loginWith')->nullable();
+            $table->string('fcmToken')->nullable();
+            $table->string('platForm')->nullable();
             $table->string('socialId')->nullable();
             $table->string('notification')->nullable();
             $table->string('verficiationCode')->nullable();

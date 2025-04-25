@@ -15,10 +15,13 @@ return new class extends Migration
             $table->id();
             $table->string('title');
             $table->text('description')->nullable();
-            $table->integer('date')->nullable();
-            $table->string('starttime')->nullable();
-            $table->string('endtime')->nullable();
-            $table->boolean('is_high_priority')->default(false);
+            $table->string('picture')->nullable();
+            $table->string('video')->nullable();
+            $table->string('url')->nullable();
+            $table->integer('due_date')->nullable();
+            $table->string('start_time')->nullable();
+            $table->string('end_time')->nullable();
+            $table->string('priority')->nullable();
             $table->enum('status', ['completed', 'todo'])->default('todo');
             $table->unsignedBigInteger('user_id');
             $table->timestamps();

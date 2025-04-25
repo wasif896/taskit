@@ -26,7 +26,9 @@ class User extends Authenticatable
         'loginWith',
         'socialId',
         'notification',
-        'verficiationCode'
+        'verficiationCode',
+        'fcmToken',
+        'platForm',
     ];
 
     /**
@@ -37,7 +39,10 @@ class User extends Authenticatable
     protected $hidden = [
         'password',
         'remember_token',
-        'created_at'
+        'created_at',
+        'updated_at',
+        'verficiationCode',
+
     ];
 
     /**
