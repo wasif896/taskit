@@ -22,6 +22,7 @@ return new class extends Migration
             $table->string('start_time')->nullable();
             $table->string('end_time')->nullable();
             $table->string('priority')->nullable();
+            $table->string('assignTo')->nullable();
             $table->enum('status', ['completed', 'todo'])->default('todo');
             $table->unsignedBigInteger('user_id');
             $table->timestamps();

@@ -21,7 +21,8 @@ class TaskController extends Controller
             'status' => 'nullable|in:completed,todo',
             'picture' => 'nullable|file|mimes:jpeg,png,jpg|max:2048',
             'video' => 'nullable|file|mimes:mp4,mov,avi|max:51200',
-            'url' => 'nullable'
+            'url' => 'nullable',
+            'assignTo' => 'nullable'
         ]);
 
         if (!Auth::check()) {
@@ -51,6 +52,8 @@ class TaskController extends Controller
             'picture' => $picturePath,
             'video' => $videoPath,
             'url' => $request->url,
+            'assignTo'=> $request->assignTo,
+
         ]);
 
         $createDate = strtotime($task->created_at);
@@ -85,7 +88,9 @@ class TaskController extends Controller
             'status' => 'nullable|in:todo,completed',
             'picture' => 'nullable|file|mimes:jpeg,png,jpg|max:2048',
             'video' => 'nullable|file|mimes:mp4,mov,avi|max:51200',
-            'url' => 'nullable'
+            'url' => 'nullable',
+            'assignTo' => 'nullable'
+
         ]);
 
         $task = Task::where('id', $taskid)
@@ -117,6 +122,7 @@ class TaskController extends Controller
             'priority',
             'status',
             'url',
+            'assignTo'
         ]));
 
         return response()->json([

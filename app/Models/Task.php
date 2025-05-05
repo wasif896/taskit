@@ -14,12 +14,13 @@ class Task extends Model
         'due_date',
         'start_time',
         'end_time',
-        'is_high_priority',
+        'priority',
         'status',
         'user_id',
           'url',
           'picture',
-          'video'
+          'video',
+          'assignTo'
     ];
 
     protected $hidden = [
@@ -35,7 +36,7 @@ class Task extends Model
         $array['video'] = $array['video']!=null ? url($array['video']) : "";
         $array['create_date'] = strval($this->created_at ? $this->created_at->timestamp : null);
         $array['due_date'] = strval($array['due_date']);
-        $array['is_high_priority'] = intval($array['is_high_priority']);
+        $array['priority'] = intval($array['priority']);
         unset($array['created_at']);
         return $array;
     }
